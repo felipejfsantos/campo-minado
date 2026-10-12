@@ -21,11 +21,15 @@ void inicializarMatriz(){
 }
 
 void imprimirMatriz(){
-/*    for(int i = 0; i < 9; i++){
-       for (int j = 0; j < 9; j++){
-           printf("%d ", campo[i][j]);
+/*    printf("    1 2 3 4 5 6 7 8 9\n");
+    printf("\n");
+    for(int i = 0; i < 9; i++){
+        printf("%d   ", i + 1); 
+        for (int j = 0; j < 9; j++){
+            printf("%d ", campo[i][j]);
         }
         printf("\n");
+        
     }
     printf("------------------------------------------------\n");*/
     printf("    1 2 3 4 5 6 7 8 9\n");
@@ -88,12 +92,17 @@ int n_bombas = 0;
                 n_bombas = 0;
             }
     }
-/*    for(int i = 0; i < 9; i++){
-       for (int j = 0; j < 9; j++){
-           printf("%d ", bombas[i][j]); 
-       }
+/*    printf("    1 2 3 4 5 6 7 8 9\n");
     printf("\n");
-   }*/
+    for(int i = 0; i < 9; i++){
+        printf("%d   ", i + 1); 
+        for (int j = 0; j < 9; j++){
+            printf("%d ", bombas[i][j]);
+        }
+        printf("\n");
+        
+    }
+    printf("------------------------------------------------\n");*/
 }
 
 int escolhaGesto(){
@@ -101,6 +110,7 @@ int escolhaGesto(){
     printf("Escolha uma acao para realizar\n");
     printf("1 - Revelar slot\n");
     printf("2 - Marcar slot como bomba\n");
+    printf("3 - Cancelar escolha\n");
     scanf("%d", &acao);
     return acao;
 }
@@ -111,11 +121,11 @@ void alterarTela(int i, int j){
         tela[i][j] = 'B';
         imprimirMatriz();
     }
-    if(gesto == 1){
+    else if(gesto == 1){
         srand(time(NULL));
         int quantidade = rand() % 8; //mostra até 8 quadrados ao redo do ponto escolhido
         if(campo[i][j] != 1){
-            tela[i][j] = '0' + campo[i][j];
+            tela[i][j] = '0' + bombas[i][j];
             for(int k = 0; k < quantidade; k++){
                 int slot = (rand() % 8) + 1;
 
@@ -148,8 +158,9 @@ void alterarTela(int i, int j){
         }
         if(campo[i][j] == 1){
             estadoJogo = false;
-            printf("Voce perdeu!!!");
+            printf("Bomba!! Voce perdeu!!!\n");
         }
+    }else if(gesto == 3){
     }
 
 }
@@ -172,7 +183,7 @@ void conferirMatriz(){
     }
     if(bombasEncontradas == numBombas){
         estadoJogo = false;
-        printf("parabens!!");
+        printf("Parabens, voce ganhou!!\n");
     }
 }
 
@@ -199,6 +210,32 @@ void iniciarJogo(){
 }
 
 int main(){
-    iniciarJogo();
+    int r, q;
+    do{
+        printf("Deseja iniciar o jogo?\n");
+        printf("1 - Sim\n");
+        printf("0 - Nao\n");
+        scanf("%d", &q);
+            switch(q){
+                case 1:
+                iniciarJogo();
+                printf("Continuar?\n");
+                printf("1 - Sim\n");
+                printf("0 - Nao\n");
+                scanf("%d", &r);
+                while(r != 1 && r != 0){
+                    printf("Opcao invalida, responda!\n");
+                    printf("Continuar?\n");
+                    printf("1 - Sim\n");
+                    printf("0 - Nao\n");
+                    scanf("%d", &r);
+                }
+                case 0: printf("Ate a proxima!!"); break;
+                default: printf("Opcao invalida, responda!\n");
+                r = 1;
+                break;
+            
+    }
+    }while(r == 1);
     return 0;
 }
