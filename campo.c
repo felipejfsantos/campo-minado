@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
-int campo[9][9]; //0 > sem bomba; 1 > com bomba
-int bombas[9][9]; //quantas bomas tem ao redor
-char tela[9][9];
-bool estadoJogo = true;
+int campo[9][9]; //posicionamento das bombas no tabuleiro, 0 > sem bomba; 1 > com bomba
+int bombas[9][9]; //quantas bombas tem ao redor de cada casa do tabuleiro
+char tela[9][9]; //matriz de exibicao do jogo
+bool estadoJogo = true; //estado atual do jogo
 
 void inicializarMatriz(){
+//inicializa as matrizes bases do jogo
     for(int i = 0; i < 9; i++){
         for (int j = 0; j < 9; j++){
             campo[i][j] = 0;
@@ -21,6 +22,7 @@ void inicializarMatriz(){
 }
 
 void imprimirMatriz(){
+//imprime a matriz de exibicao do jogo
 /*    printf("    1 2 3 4 5 6 7 8 9\n");
     printf("\n");
     for(int i = 0; i < 9; i++){
@@ -46,6 +48,7 @@ void imprimirMatriz(){
 }
 
 void sortearBomba(){
+// distribuicao aleatoria as bombas pelo tabuleiro
 int i = 0; //quantidade de bombas na partida
 srand(time(NULL));
     while(i < 9){
@@ -58,7 +61,8 @@ srand(time(NULL));
     }
 }
 
-void exibirBombas(){                   
+void exibirBombas(){    
+// para cada casa do tabuleiro, verifica quantas bombas tem ao redor e guarda esse valor na matriz bombas     
 int n_bombas = 0;
         for(int i = 0; i < 9; i++){
             for (int j = 0; j < 9; j++){
@@ -106,6 +110,7 @@ int n_bombas = 0;
 }
 
 int escolhaGesto(){
+// as ações que o jogador pode realizar duranto o jogo
     int acao;
     printf("Escolha uma acao para realizar\n");
     printf("1 - Revelar slot\n");
@@ -116,19 +121,21 @@ int escolhaGesto(){
 }
 
 void alterarTela(int i, int j){
+//modifica a matriz de exibicao de acordo com a acao escolhida
     int gesto = escolhaGesto();
     if(gesto == 2){
+        //marca a casa como "B" indicando que há uma bomba lá
         tela[i][j] = 'B';
         imprimirMatriz();
     }
     else if(gesto == 1){
+        //revela a casa escolhida e algumas casas sem bombas ao redor
         srand(time(NULL));
         int quantidade = rand() % 8; //mostra até 8 quadrados ao redo do ponto escolhido
         if(campo[i][j] != 1){
             tela[i][j] = '0' + bombas[i][j];
             for(int k = 0; k < quantidade; k++){
-                int slot = (rand() % 8) + 1;
-
+                int slot = (rand() % 8) + 1; //uma das 8 casas vizinhas, se existir, é escolhida
                 if(campo[i-1][j] != 1 && i-1 >= 0 && slot == 1){
                     tela[i-1][j] = '0' + bombas[i-1][j];// 1 esquerda
                 }       
@@ -157,6 +164,7 @@ void alterarTela(int i, int j){
             imprimirMatriz();
         }
         if(campo[i][j] == 1){
+            //uma casa com bomba foi revelada, derrota do jogador
             estadoJogo = false;
             printf("Bomba!! Voce perdeu!!!\n");
         }
@@ -166,6 +174,7 @@ void alterarTela(int i, int j){
 }
 
 void conferirMatriz(){
+//confere quantas casas foram marcadas corretamente como bombas
     int bombasEncontradas = 0, numBombas = 0;
     for(int i = 0; i < 9; i++){
         for (int j = 0; j < 9; j++){
@@ -182,35 +191,16 @@ void conferirMatriz(){
         }
     }
     if(bombasEncontradas == numBombas){
+        //todas as bombas foram encontradas, vitória do jogador
         estadoJogo = false;
         printf("Parabens, voce ganhou!!\n");
     }
 }
 
 void iniciarJogo(){
-    int linha, coluna;
-    inicializarMatriz();
-    sortearBomba();
-    imprimirMatriz();
-    exibirBombas();
-    while(estadoJogo == true){
-        printf("Escolha um slot\n");
-        printf("Selecione a linha: 1-9\n");
-        scanf("%d", &linha);
-        printf("Selecione a coluna: 1-9\n");
-        scanf("%d", &coluna);
-        if(linha >= 1 && linha <= 9 && coluna >= 1 && coluna <= 9){
-            alterarTela(linha - 1, coluna - 1);
-        }
-        else{
-            printf("Informe um numero valido!\n");
-        }
-        conferirMatriz();
-    }
-}
-
-int main(){
+    //funcao que inicia o jogo
     int r, q;
+    int linha, coluna;
     do{
         printf("Deseja iniciar o jogo?\n");
         printf("1 - Sim\n");
@@ -218,7 +208,24 @@ int main(){
         scanf("%d", &q);
             switch(q){
                 case 1:
-                iniciarJogo();
+                inicializarMatriz();
+                sortearBomba();
+                imprimirMatriz();
+                exibirBombas();
+                while(estadoJogo == true){
+                    printf("Escolha um slot\n");
+                    printf("Selecione a linha: 1-9\n");
+                    scanf("%d", &linha);
+                    printf("Selecione a coluna: 1-9\n");
+                    scanf("%d", &coluna);
+                    if(linha >= 1 && linha <= 9 && coluna >= 1 && coluna <= 9){
+                        alterarTela(linha - 1, coluna - 1);
+                    }
+                    else{
+                        printf("Informe um numero valido!\n");
+                    }
+                    conferirMatriz();
+                }                
                 printf("Continuar?\n");
                 printf("1 - Sim\n");
                 printf("0 - Nao\n");
@@ -237,5 +244,9 @@ int main(){
             
     }
     }while(r == 1);
+}
+
+int main(){
+    iniciarJogo();
     return 0;
 }
