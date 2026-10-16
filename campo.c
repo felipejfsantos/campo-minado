@@ -6,6 +6,7 @@ int campo[9][9]; //posicionamento das bombas no tabuleiro, 0 > sem bomba; 1 > co
 int bombas[9][9]; //quantas bombas tem ao redor de cada casa do tabuleiro
 char tela[9][9]; //matriz de exibicao do jogo
 bool estadoJogo = true; //estado atual do jogo
+int limiteMarcacao = 10;
 
 void inicializarMatriz(){
 //inicializa as matrizes bases do jogo
@@ -23,17 +24,6 @@ void inicializarMatriz(){
 
 void imprimirMatriz(){
 //imprime a matriz de exibicao do jogo
-/*    printf("    1 2 3 4 5 6 7 8 9\n");
-    printf("\n");
-    for(int i = 0; i < 9; i++){
-        printf("%d   ", i + 1); 
-        for (int j = 0; j < 9; j++){
-            printf("%d ", campo[i][j]);
-        }
-        printf("\n");
-        
-    }
-    printf("------------------------------------------------\n");*/
     printf("    1 2 3 4 5 6 7 8 9\n");
     printf("\n");
     for(int i = 0; i < 9; i++){
@@ -49,9 +39,9 @@ void imprimirMatriz(){
 
 void sortearBomba(){
 // distribuicao aleatoria as bombas pelo tabuleiro
-int i = 0; //quantidade de bombas na partida
+int i = 0; 
 srand(time(NULL));
-    while(i < 9){
+    while(i < 9){ //quantidade de bombas na partida
         int linha = rand() % 10;
         int coluna = rand() % 10;
         if (campo[linha][coluna] == 0){
@@ -96,17 +86,6 @@ int n_bombas = 0;
                 n_bombas = 0;
             }
     }
-/*    printf("    1 2 3 4 5 6 7 8 9\n");
-    printf("\n");
-    for(int i = 0; i < 9; i++){
-        printf("%d   ", i + 1); 
-        for (int j = 0; j < 9; j++){
-            printf("%d ", bombas[i][j]);
-        }
-        printf("\n");
-        
-    }
-    printf("------------------------------------------------\n");*/
 }
 
 int escolhaGesto(){
@@ -114,7 +93,7 @@ int escolhaGesto(){
     int acao;
     printf("Escolha uma acao para realizar\n");
     printf("1 - Revelar slot\n");
-    printf("2 - Marcar slot como bomba\n");
+    printf("2 - Marcar/Desmarcar slot como bomba\n");
     printf("3 - Cancelar escolha\n");
     scanf("%d", &acao);
     return acao;
@@ -124,9 +103,21 @@ void alterarTela(int i, int j){
 //modifica a matriz de exibicao de acordo com a acao escolhida
     int gesto = escolhaGesto();
     if(gesto == 2){
-        //marca a casa como "B" indicando que há uma bomba lá
-        tela[i][j] = 'B';
-        imprimirMatriz();
+        if(tela[i][j] == '#' && limiteMarcacao > 0){
+            //marca a casa como "B" indicando que há uma bomba lá
+            tela[i][j] = 'B';
+            imprimirMatriz();
+            limiteMarcacao--;
+        }else if(tela[i][j] == 'B'){
+            //desmarca a casa
+            tela[i][j] = '#';
+            imprimirMatriz();
+            limiteMarcacao++;
+        }else{
+            printf("O limite de marcacoes foi atingido!!\n");
+            imprimirMatriz();
+        }
+
     }
     else if(gesto == 1){
         //revela a casa escolhida e algumas casas sem bombas ao redor
